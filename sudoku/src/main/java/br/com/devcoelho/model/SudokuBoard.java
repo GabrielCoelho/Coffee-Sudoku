@@ -1,6 +1,8 @@
 package br.com.devcoelho.model;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class SudokuBoard {
 
@@ -19,12 +21,22 @@ public class SudokuBoard {
     space.setContent(value);
   }
 
-  public void clearContent(final int col, final int row, final int value) {
+  public void clearContent(final int col, final int row) {
     var space = table.get(col).get(row);
     space.clearCurrentSpace();
   }
 
   public void reset() {
     table.forEach(row -> row.forEach(SudokuSpace::clearCurrentSpace));
+  }
+
+  public boolean hasErrors() {
+    return table.stream()
+        .flatMap(Collection::stream)
+        .anyMatch(s -> Objects.nonNull(s.getContent()) && !s.getContent().equals(s.getExpected()));
+  }
+
+  public boolean gameIsFinished() {
+    return !hasErrors();
   }
 }
